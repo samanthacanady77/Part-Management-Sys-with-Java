@@ -1,11 +1,13 @@
 package model;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class
-Product {
+import static com.sun.tools.doclint.Entity.part;
 
-    private static ObservableList<Part> associateParts;
+public class Product {
+// cannot be static
+    private ObservableList<Part> associatedParts = FXCollections.observableArrayList();
 
     //field declaration
     private int id;
@@ -25,23 +27,32 @@ Product {
         this.max = max;
     }
 
+    public Product() {
+
+    }
+
     //setters
-    public void setID(int id){
+    public void setID(int id) {
         this.id = id;
     }
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    public void setPrice(double price){
+
+    public void setPrice(double price) {
         this.price = price;
     }
-    public void setStock(int stock){
+
+    public void setStock(int stock) {
         this.stock = stock;
     }
-    public void setMax(int max){
+
+    public void setMax(int max) {
         this.max = max;
     }
-    public void setMin(int min){
+
+    public void setMin(int min) {
         this.min = min;
     }
 
@@ -49,33 +60,42 @@ Product {
     public int getId() {
         return id;
     }
+
     public String getName() {
         return name;
     }
+
     public double getPrice() {
         return price;
     }
+
     public int getStock() {
         return stock;
     }
+
     public int getMin() {
         return min;
     }
+
     public int getMax() {
         return max;
     }
 
-    public void addAssociatedPart(Part part){
-
+    public void addAssociatedPart(Part part) {
+        associatedParts.add(part);
     }
-
-    public boolean deleteAssociatedPart(Part selectedAssociatedPart){
+//experimental
+    public boolean deleteAssociatedPart(Part selectedAssociatedPart) {
+        for (Part partObj : Inventory.getAllParts()) {
+            if(partObj == selectedAssociatedPart) {
+                return getAllAssociatedParts().remove(part);
+            }
+        }
         return false;
     }
 
-    public static ObservableList<Part> getAllAssociatedPart(){
-        //probably wrong, need to fix
-        // ok maybe it's fixed now??
-        return associateParts;
+    public ObservableList<Part> getAllAssociatedParts() {
+        return associatedParts;
     }
 }
+

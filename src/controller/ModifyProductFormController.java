@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import model.Inventory;
+import model.Part;
+import model.Product;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,32 +25,7 @@ public class ModifyProductFormController implements Initializable {
     Stage stage;
     Parent scene;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("This too is working");
-    }
-
-    @FXML
-    private Button addButton;
-
-    @FXML
-    private TableColumn<?, ?> assocPartIdCol;
-
-    @FXML
-    private TableColumn<?, ?> assocPartInventoryCol;
-
-    @FXML
-    private TableColumn<?, ?> assocPartNameCol;
-
-    @FXML
-    private TableColumn<?, ?> assocPartPriceCol;
-
-    @FXML
-    private TableView<?> assocPartTableView;
-
-    @FXML
-    private Button cancelButton;
-
+    //text fields
     @FXML
     private TextField idText;
 
@@ -62,25 +42,43 @@ public class ModifyProductFormController implements Initializable {
     private TextField nameText;
 
     @FXML
-    private TableColumn<?, ?> partIdCol;
-
-    @FXML
-    private TableColumn<?, ?> partInventoryCol;
-
-    @FXML
-    private TableColumn<?, ?> partNameCol;
-
-    @FXML
-    private TableColumn<?, ?> partPriceCol;
-
-    @FXML
-    private TableView<?> partTableView;
-
-    @FXML
     private TextField priceText;
 
+    //part table
     @FXML
-    private Button removeAssocPartButton;
+    private TableView<Part> partTableView;
+
+    @FXML
+    private TableColumn<Part, Integer> partIdCol;
+
+    @FXML
+    private TableColumn<Part, Integer> partInventoryCol;
+
+    @FXML
+    private TableColumn<Part, String> partNameCol;
+
+    @FXML
+    private TableColumn<Part, Double> partPriceCol;
+
+    //assoc part table
+    @FXML
+    private TableView<Part> assocPartTableView;
+
+    @FXML
+    private TableColumn<Part, Integer> assocPartIdCol;
+
+    @FXML
+    private TableColumn<Part, String> assocPartNameCol;
+
+    @FXML
+    private TableColumn<Part, Integer> assocPartInventoryCol;
+
+    @FXML
+    private TableColumn<Part, Double> assocPartPriceCol;
+
+    //search bar and button
+    @FXML
+    private Button addButton;
 
     @FXML
     private Button saveButton;
@@ -89,13 +87,58 @@ public class ModifyProductFormController implements Initializable {
     private TextField searchBar;
 
     @FXML
-    void onActionAddPart(ActionEvent event) {
-
-    }
+    private Button cancelButton;
 
     @FXML
-    void onActionRemoveAssocPart(ActionEvent event) {
+    private Button removeAssocPartButton;
 
+    @FXML
+    private Button searchButton;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        //part
+        partTableView.setItems(Inventory.getAllParts());
+        partIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        partInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        
+        //assoc part
+        // i think i know why it's broken, I need to get the product objects functional
+
+        assocPartTableView.setItems(Inventory.getAllParts());
+        assocPartIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        assocPartInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        assocPartNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        assocPartPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+    }
+    @FXML
+    void onActionAddPart(ActionEvent event) {
+        Part partObj = (Part) partTableView.getSelectionModel().getSelectedItem();
+        Product productObj = new Product(0,"",0,0,0,0);
+        if(partObj == null){
+            return;
+        }
+        else{
+            //not sure if the original part should remain in the part table, so this may need adjustment
+            Inventory.getAllParts().remove(partObj);
+            productObj.getAllAssociatedParts().add(partObj);
+        }
+    }
+//maybe works???
+    @FXML
+    void onActionRemoveAssocPart(ActionEvent event) {
+        Part partObj = (Part) assocPartTableView.getSelectionModel().getSelectedItem();
+        //not working as intended, temporary constructor implemented to prevented errors
+        Product productObj = new Product();
+        if(partObj == null){
+            return;
+        }
+        else{
+            productObj.getAllAssociatedParts().remove(partObj);
+            Inventory.getAllParts().add(partObj);
+        }
     }
 
     @FXML
@@ -111,4 +154,6 @@ public class ModifyProductFormController implements Initializable {
 
     }
 
+    public void onActionSearchParts(ActionEvent actionEvent) {
+    }
 }
