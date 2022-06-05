@@ -100,10 +100,11 @@ public class MainFormController implements Initializable {
 
     @FXML
     void onActionSearchParts(ActionEvent event) {
-        String results = partSearchBar.getText();
-        ObservableList<Part> part = lookupPart(results);
+            String results = partSearchBar.getText();
+            ObservableList<Part> part = lookupPart(results);
 
-        partTableView.setItems(part);
+            partTableView.setItems(part);
+
     }
 
     @FXML
@@ -182,13 +183,20 @@ public class MainFormController implements Initializable {
     }
 
     public void onActionDeletePart(ActionEvent actionEvent) {
-        Part selectedPartObj = (Part)partTableView.getSelectionModel().getSelectedItem();
-        if(selectedPartObj == null){
+        Part selectedPart = (Part)partTableView.getSelectionModel().getSelectedItem();
+
+        if(selectedPart == null){
             return;
         }
         else{
-            Inventory.getAllParts().remove(selectedPartObj);
+            Inventory.getAllParts().remove(selectedPart);
+            //not sure if it should work like this, makes the search bar blank and restores original updated list
+
+            partSearchBar.setText("");
+            partTableView.setItems(Inventory.getAllParts());
+
         }
+
     }
 
     public void onActionAddProduct(ActionEvent actionEvent) throws IOException {
@@ -199,10 +207,21 @@ public class MainFormController implements Initializable {
     }
 
     public void onActionModifyProduct(ActionEvent actionEvent) throws IOException {
-        stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
-        scene = FXMLLoader.load(getClass().getResource("/view/ModifyProductForm.fxml"));
-        stage.setScene(new Scene(scene));
-        stage.show();
+        Product selectedProduct = (Product)productTableView.getSelectionModel().getSelectedItem();
+
+        if(selectedProduct == null){
+            return;
+        }
+
+        else{
+            ModifyProductFormController.passInfoToModifyProductForm(selectedProduct);
+            stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
+            scene = FXMLLoader.load(getClass().getResource("/view/ModifyProductForm.fxml"));
+            stage.setScene(new Scene(scene));
+            stage.show();
+
+        }
+
     }
 
     public void onActionDeleteProduct(ActionEvent actionEvent) {
@@ -212,7 +231,10 @@ public class MainFormController implements Initializable {
         }
         else{
             Inventory.getAllProducts().remove(selectedProductObj);
-
+            //not sure if it should work like this, makes the search bar blank and restores original updated list
+            //will probably update to make dynamic eventually
+            productSearchBar.setText("");
+            productTableView.setItems(Inventory.getAllProducts());
         }
     }
 

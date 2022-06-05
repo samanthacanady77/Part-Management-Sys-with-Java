@@ -184,9 +184,9 @@ public class AddProductFormController implements Initializable {
             return;
         }
         else{
-            //does the part return to the part table??
-           //productObj.getAllAssociatedParts().remove(partObj);
-            Inventory.getAllParts().add(partObj);
+
+           //.getAllAssociatedParts().remove(partObj);
+
 
         }
     }

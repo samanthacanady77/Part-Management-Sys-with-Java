@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Inventory;
+import model.Outsourced;
 import model.Part;
 import model.Product;
 
@@ -95,9 +96,25 @@ public class ModifyProductFormController implements Initializable {
     @FXML
     private Button searchButton;
 
+    private static Product productInfo = null;
+
+    public static Product passInfoToModifyProductForm(Product passInfo){
+        productInfo = passInfo;
+
+        return productInfo;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //part
+        //fills text fields with info
+        idText.setText(String.valueOf(productInfo.getId()));
+        nameText.setText(productInfo.getName());
+        inventoryText.setText(String.valueOf(productInfo.getStock()));
+        priceText.setText(String.valueOf(productInfo.getPrice()));
+        maxText.setText(String.valueOf(productInfo.getMax()));
+        minText.setText(String.valueOf(productInfo.getMin()));
+
+           //part
         partTableView.setItems(Inventory.getAllParts());
         partIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         partInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
@@ -105,14 +122,14 @@ public class ModifyProductFormController implements Initializable {
         partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
         
         //assoc part
-        // i think i know why it's broken, I need to get the product objects functional
 
-        assocPartTableView.setItems(Inventory.getAllParts());
+        //assocPartTableView.setItems(Product.getAllAssociatedParts());
         assocPartIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         assocPartInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         assocPartNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         assocPartPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
+
     @FXML
     void onActionAddPart(ActionEvent event) {
         Part partObj = (Part) partTableView.getSelectionModel().getSelectedItem();

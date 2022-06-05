@@ -25,6 +25,19 @@ public class Inventory {
     }
 
 
+    //lookup part
+    public static ObservableList<Part> lookupPart(String partName){
+        ObservableList<Part> listedParts = FXCollections.observableArrayList();
+
+        for(Part part : Inventory.getAllParts()){
+            if(part.getName().contains(partName)){
+                listedParts.add(part);
+            }
+        }
+        return listedParts;
+    }
+
+
     public static ObservableList<Product> lookupProduct(String productName){
         ObservableList<Product> listedProducts = FXCollections.observableArrayList();
 
@@ -34,7 +47,6 @@ public class Inventory {
             }
         }
         return listedProducts;
-
     }
 
     public static Product lookupProduct(int productId){
@@ -52,17 +64,7 @@ public class Inventory {
         return null;
     }
 
-    //lookup part
-    public static ObservableList<Part> lookupPart(String partName){
-        ObservableList<Part> listedParts = FXCollections.observableArrayList();
 
-        for(Part part : Inventory.getAllParts()){
-            if(part.getName().contains(partName)){
-                listedParts.add(part);
-            }
-        }
-        return listedParts;
-    }
 
     public static Part lookupPart(int partId) {
         for ( Part part : Inventory.getAllParts()) {
