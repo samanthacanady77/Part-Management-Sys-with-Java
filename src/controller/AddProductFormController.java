@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.InHouse;
 import model.Inventory;
 import model.Part;
@@ -17,6 +19,8 @@ import model.Product;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static model.Inventory.lookupPart;
 
 public class AddProductFormController implements Initializable {
     Stage stage;
@@ -127,6 +131,7 @@ public class AddProductFormController implements Initializable {
 
     }
 
+
     public void onActionAddPart(ActionEvent actionEvent) {
         //not complete functionality,
         //5/27/22 maybe functional now?
@@ -173,8 +178,8 @@ public class AddProductFormController implements Initializable {
             scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
             stage.setScene(new Scene(scene));
             stage.show();
-
     }
+
     //maybe works???
     public void onActionRemoveAssocPart(ActionEvent actionEvent) {
         Part partObj = (Part) assocPartTableView.getSelectionModel().getSelectedItem();
@@ -184,13 +189,22 @@ public class AddProductFormController implements Initializable {
             return;
         }
         else{
-
            //.getAllAssociatedParts().remove(partObj);
-
-
         }
     }
 
     public void onActionSearchParts(ActionEvent actionEvent) {
+        String results = searchBar.getText();
+        ObservableList<Part> searchParts = lookupPart(results);
+
+        if(searchParts.size() == 0){
+            int partIdSearch = Integer.parseInt(searchBar.getText());
+            Part part = lookupPart(partIdSearch);
+
+            if(part != null){
+                searchParts.add(part);
+            }
+        }
+        partTableView.setItems(searchParts);
     }
 }

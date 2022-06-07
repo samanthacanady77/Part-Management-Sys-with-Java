@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static model.Inventory.lookupPart;
+
 public class ModifyProductFormController implements Initializable {
     Stage stage;
     Parent scene;
@@ -97,9 +99,11 @@ public class ModifyProductFormController implements Initializable {
     private Button searchButton;
 
     private static Product productInfo = null;
+    private static int index = -1;
 
     public static Product passInfoToModifyProductForm(Product passInfo){
         productInfo = passInfo;
+        index = Inventory.getAllProducts().indexOf(passInfo);
 
         return productInfo;
     }
@@ -114,7 +118,7 @@ public class ModifyProductFormController implements Initializable {
         maxText.setText(String.valueOf(productInfo.getMax()));
         minText.setText(String.valueOf(productInfo.getMin()));
 
-           //part
+        //part
         partTableView.setItems(Inventory.getAllParts());
         partIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         partInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
@@ -122,7 +126,6 @@ public class ModifyProductFormController implements Initializable {
         partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
         
         //assoc part
-
         //assocPartTableView.setItems(Product.getAllAssociatedParts());
         assocPartIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         assocPartInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
@@ -167,10 +170,36 @@ public class ModifyProductFormController implements Initializable {
     }
 
     @FXML
-    void onActionSave(ActionEvent event) {
+    void onActionSave(ActionEvent event) throws IOException {
+        int id = Integer.parseInt(idText.getText());
+        String name = String.valueOf(nameText.getText());
+        int stock = Integer.parseInt(inventoryText.getText());
+        double price = Double.parseDouble(priceText.getText());
+        int max = Integer.parseInt(maxText.getText());
+        int min = Integer.parseInt(minText.getText());
 
+        Product product = new Product(id, name, price, stock, max, min);
+        Inventory.updateProduct(index, product);
+
+        stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+        scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+        stage.setScene(new Scene(scene));
+        stage.show();
     }
 
+
     public void onActionSearchParts(ActionEvent actionEvent) {
+        String results = searchBar.getText();
+        ObservableList<Part> searchParts = lookupPart(results);
+
+        if(searchParts.size() == 0){
+            int partIdSearch = Integer.parseInt(searchBar.getText());
+            Part part = lookupPart(partIdSearch);
+
+            if(part != null){
+                searchParts.add(part);
+            }
+        }
+        partTableView.setItems(searchParts);
     }
 }

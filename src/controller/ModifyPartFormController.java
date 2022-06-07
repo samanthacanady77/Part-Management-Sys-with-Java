@@ -70,9 +70,17 @@ public class ModifyPartFormController<index> implements Initializable {
 
 
     private static Part partInfo = null;
+    private static int index = -1;
 
     public static void passInfoToModifyPartForm(Part passInfo){
+
         partInfo = passInfo;
+        //gets the index needed to call update()
+        index = Inventory.getAllParts().indexOf(passInfo);
+    }
+
+    public static void passIndexToModifyPart(int passIndex){
+
     }
 
     public void assignTextFieldsInHouse(){
@@ -138,10 +146,9 @@ public class ModifyPartFormController<index> implements Initializable {
             int min = Integer.parseInt(minText.getText());
             int machineId = Integer.parseInt(machineIdText.getText());
 
+            InHouse inHouse = new InHouse(id, name, price, stock, max, min, machineId);
 
-            InHouse inHouseObj = new InHouse(id, name, price, stock, max, min, machineId);
-            Inventory.updatePart(0,inHouseObj);
-
+            Inventory.updatePart(index,inHouse);
         }
         else {
             int id = Integer.parseInt(idText.getText());
@@ -152,9 +159,9 @@ public class ModifyPartFormController<index> implements Initializable {
             int min = Integer.parseInt(minText.getText());
             String companyName = String.valueOf(companyNameText.getText());
 
-
             Outsourced outsourceObj = new Outsourced(id, name, price, stock, max, min, companyName);
-            Inventory.updatePart(0,outsourceObj);
+
+            Inventory.updatePart(index,outsourceObj);
         }
 
         stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;

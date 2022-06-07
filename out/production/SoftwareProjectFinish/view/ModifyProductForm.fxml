@@ -51,7 +51,7 @@
                               <Label maxHeight="25.0" minHeight="25.0" prefHeight="25.0" text="Inv" GridPane.rowIndex="2" />
                               <Label maxHeight="25.0" minHeight="25.0" prefHeight="25.0" text="Price" GridPane.rowIndex="3" />
                               <Label maxHeight="25.0" minHeight="25.0" prefHeight="25.0" text="Max" GridPane.rowIndex="4" />
-                              <TextField fx:id="idText" GridPane.columnIndex="1" />
+                              <TextField fx:id="idText" disable="true" editable="false" GridPane.columnIndex="1" />
                               <TextField fx:id="nameText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <TextField fx:id="inventoryText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <TextField fx:id="priceText" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -78,7 +78,7 @@
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
                               <TextField fx:id="searchBar" prefHeight="26.0" prefWidth="490.0" promptText="Search by Part ID or Name" />
-                              <Button fx:id="searchParts" mnemonicParsing="false" onAction="#onActionSearchParts" prefHeight="26.0" prefWidth="276.0" text="Search" />
+                              <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onActionSearchParts" prefHeight="26.0" prefWidth="276.0" text="Search" />
                            </children>
                         </HBox>
                         <TableView fx:id="partTableView" prefHeight="198.0" prefWidth="482.0">

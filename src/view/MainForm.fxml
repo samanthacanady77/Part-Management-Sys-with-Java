@@ -63,7 +63,7 @@
                                     </TextField>
                                     <HBox prefHeight="100.0" prefWidth="200.0">
                                        <children>
-                                          <Button maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onActionSearchParts" prefHeight="0.0" prefWidth="54.0" text="Search">
+                                          <Button fx:id="partSearchButton" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onActionSearchParts" prefHeight="0.0" prefWidth="54.0" text="Search">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -133,7 +133,7 @@
                                     </TextField>
                                     <HBox prefHeight="100.0" prefWidth="200.0">
                                        <children>
-                                          <Button minHeight="20.0" mnemonicParsing="false" onAction="#onActionSearchProducts" prefHeight="20.0" prefWidth="54.0" text="Search">
+                                          <Button fx:id="productSearchButton" minHeight="20.0" mnemonicParsing="false" onAction="#onActionSearchProducts" prefHeight="20.0" prefWidth="54.0" text="Search">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>

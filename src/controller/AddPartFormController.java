@@ -25,48 +25,40 @@ public class AddPartFormController implements Initializable {
     //variables
     @FXML
     private TextField idText;
-
     @FXML
     private TextField nameText;
-
     @FXML
     private TextField inventoryText;
-
     @FXML
     private TextField priceText;
-
     @FXML
     private TextField maxText;
-
     @FXML
     private TextField minText;
-
     @FXML
     private TextField machineIdText;
     @FXML
     private TextField companyNameText;
-
     @FXML
     private Label machineIdOrCompanyNameLabel;
+
 
     //buttons
     @FXML
     private RadioButton inHouseRadioButton;
-
     @FXML
     private Button cancelButton;
-
     @FXML
     private RadioButton outsourcedRadioButton;
-
     @FXML
     private Button saveButton;
-
     @FXML
     private ToggleGroup InHouseOrOutsourced;
 
+
     //generates unique IDs
     static int newId = 99;
+
 
     public static int assignId(){
 
@@ -75,10 +67,6 @@ public class AddPartFormController implements Initializable {
         return newId;
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-    }
 
     public void onActionReturnMainForm(ActionEvent actionEvent) throws IOException {
         stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
@@ -100,7 +88,6 @@ public class AddPartFormController implements Initializable {
            int machineId = Integer.parseInt(machineIdText.getText());
 
            Inventory.addPart(new InHouse(id, name, price, stock, max, min, machineId));
-
        }
        //java.lang.NumberFormatException: For input string: ""
        //fixed by alter machineId, moved it inside of the loop
@@ -123,6 +110,8 @@ public class AddPartFormController implements Initializable {
         stage.show();
 
     }
+
+
     //switches between the two AddPartForm views based on Radio Button Selection
     public void onActionChangeViewToOutsourced(ActionEvent actionEvent) throws IOException {
         machineIdOrCompanyNameLabel.setText("Company Name");
@@ -136,5 +125,11 @@ public class AddPartFormController implements Initializable {
         machineIdText.setVisible(true);
         companyNameText.setVisible(false);
         companyNameText.clear();
+    }
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
     }
 }

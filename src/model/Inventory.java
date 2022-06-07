@@ -8,6 +8,7 @@ public class Inventory {
     private static ObservableList<Part> allParts = FXCollections.observableArrayList();
     private static ObservableList<Product> allProducts = FXCollections.observableArrayList();
 
+
     public static void addPart(Part newPart) {
         allParts.add(newPart);
     }
@@ -15,6 +16,7 @@ public class Inventory {
     public static void addProduct(Product newProduct){
         allProducts.add(newProduct);
     }
+
 
     public static ObservableList<Part> getAllParts(){
         return allParts;
@@ -25,7 +27,7 @@ public class Inventory {
     }
 
 
-    //lookup part
+    //lookup
     public static ObservableList<Part> lookupPart(String partName){
         ObservableList<Part> listedParts = FXCollections.observableArrayList();
 
@@ -36,7 +38,6 @@ public class Inventory {
         }
         return listedParts;
     }
-
 
     public static ObservableList<Product> lookupProduct(String productName){
         ObservableList<Product> listedProducts = FXCollections.observableArrayList();
@@ -49,11 +50,25 @@ public class Inventory {
         return listedProducts;
     }
 
+
+    public static Part lookupPart(int partId) {
+        ObservableList<Part> allParts = Inventory.getAllParts();
+
+        for ( Part part : Inventory.getAllParts()) {
+            if(part.getId() == partId){
+                return part;
+            }
+            else{
+                //print out message to be deleted eventually
+                System.out.println("Part not found.");
+            }
+        }
+        return null;
+    }
+
     public static Product lookupProduct(int productId){
         for ( Product product : Inventory.getAllProducts()) {
             if(product.getId() == productId){
-                //print out message to be deleted eventually
-                System.out.println("Product found.");
                 return product;
             }
             else{
@@ -65,40 +80,30 @@ public class Inventory {
     }
 
 
-
-    public static Part lookupPart(int partId) {
-        for ( Part part : Inventory.getAllParts()) {
-            if(part.getId() == partId){
-                //print out message to be deleted eventually
-                System.out.println("Part found.");
-                return part;
-            }
-            else{
-                //print out message to be deleted eventually
-                System.out.println("Part not found.");
-            }
-        }
-        return null;
-    }
-
-//not sure if this works at all
     public static void updatePart(int index, Part selectedPart){
-       // might be better elsewhere index = Inventory.getAllParts().indexOf(selectedPart);
-        //works but doesn't use an index?? I'm not sure how to.
-        for(Part partObj : Inventory.getAllParts()){
+        for(Part part : Inventory.getAllParts()){
 
-            System.out.println(partObj.getName() + " and " + selectedPart.getName());
-            if (partObj.getId() == selectedPart.getId()){
-                allParts.add(selectedPart);
-                deletePart(partObj);
+            if (allParts.indexOf(part) == index){
+
+                allParts.set(index, selectedPart);
             }
         }
-
     }
 
     public static void updateProduct(int index, Product newProduct){
+        for(Product product : Inventory.getAllProducts()){
 
+            System.out.println("if hasnt fired");
+            if (allProducts.indexOf(product) == index){
+
+                System.out.println("if fired");
+                allProducts.set(index, newProduct);
+            }
+        }
     }
+
+
+
 
     public static boolean deletePart(Part selectedPart){
         for(Part partObj : Inventory.getAllParts()){
