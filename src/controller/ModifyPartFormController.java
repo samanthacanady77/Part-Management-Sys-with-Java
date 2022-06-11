@@ -79,10 +79,6 @@ public class ModifyPartFormController<index> implements Initializable {
         index = Inventory.getAllParts().indexOf(passInfo);
     }
 
-    public static void passIndexToModifyPart(int passIndex){
-
-    }
-
     public void assignTextFieldsInHouse(){
         idText.setText(String.valueOf(partInfo.getId()));
         nameText.setText(partInfo.getName());
@@ -91,8 +87,9 @@ public class ModifyPartFormController<index> implements Initializable {
         maxText.setText(String.valueOf(partInfo.getMax()));
         minText.setText(String.valueOf(partInfo.getMin()));
         machineIdText.setText(String.valueOf(((InHouse)partInfo).getMachineId()));
+        System.out.println("first assign fields: " + partInfo.getMax());
     }
-//made all of this static but that may have to change later
+
     public void assignTextFieldsOutsourced(){
         idText.setText(String.valueOf(partInfo.getId()));
         nameText.setText(partInfo.getName());
@@ -101,12 +98,13 @@ public class ModifyPartFormController<index> implements Initializable {
         maxText.setText(String.valueOf(partInfo.getMax()));
         minText.setText(String.valueOf(partInfo.getMin()));
         companyNameText.setText(String.valueOf(((Outsourced)partInfo).getCompanyName()));
+        System.out.println("second assign fields: " + partInfo.getMax());
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (partInfo instanceof InHouse) {
-
+            System.out.println("first instance of " + partInfo.getMax());
             inHouseRadioButton.setSelected(true);
             machineIdOrCompanyNameLabel.setText("Machine ID");
 
@@ -116,7 +114,7 @@ public class ModifyPartFormController<index> implements Initializable {
             assignTextFieldsInHouse();
         }
         else if (partInfo instanceof Outsourced) {
-
+            System.out.println("second instance of " + partInfo.getMax());
             outsourcedRadioButton.setSelected(true);
 
             machineIdOrCompanyNameLabel.setText("Company Name");
@@ -136,38 +134,77 @@ public class ModifyPartFormController<index> implements Initializable {
     }
 
     public void onActionSave(ActionEvent actionEvent) throws IOException {
+        try {
+            if (inHouseRadioButton.isSelected()) {
+                System.out.println("inhouse body " + maxText + " " + minText);
+                int id = Integer.parseInt(idText.getText());
+                String name = String.valueOf(nameText.getText());
+                int stock = Integer.parseInt(inventoryText.getText());
+                double price = Double.parseDouble(priceText.getText());
+                int max = Integer.parseInt(maxText.getText());
+                int min = Integer.parseInt(minText.getText());
+                int machineId = Integer.parseInt(machineIdText.getText());
 
-        if(inHouseRadioButton.isSelected()){
-            int id = Integer.parseInt(idText.getText());
-            String name = String.valueOf(nameText.getText());
-            int stock = Integer.parseInt(inventoryText.getText());
-            double price = Double.parseDouble(priceText.getText());
-            int max = Integer.parseInt(maxText.getText());
-            int min = Integer.parseInt(minText.getText());
-            int machineId = Integer.parseInt(machineIdText.getText());
+                if (min >= max) {
+                    Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                    alert1.setTitle("Error");
+                    alert1.setContentText("The min value must be less than the max.");
+                    alert1.show();
+                }
+                if (stock > max || stock < min) {
+                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.setTitle("Error");
+                    alert2.setContentText("Inventory must be between min and max values.");
+                    alert2.show();
+                }
+                if (max > min & stock <= max & stock >= min) {
+                    InHouse inHouse = new InHouse(id, name, price, stock, min, max, machineId);
+                    Inventory.updatePart(index, inHouse);
 
-            InHouse inHouse = new InHouse(id, name, price, stock, max, min, machineId);
+                    stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                    scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                    stage.setScene(new Scene(scene));
+                    stage.show();
+                }
+            }
+            else {
+                int id = Integer.parseInt(idText.getText());
+                String name = String.valueOf(nameText.getText());
+                int stock = Integer.parseInt(inventoryText.getText());
+                double price = Double.parseDouble(priceText.getText());
+                int max = Integer.parseInt(maxText.getText());
+                int min = Integer.parseInt(minText.getText());
+                String companyName = String.valueOf(companyNameText.getText());
 
-            Inventory.updatePart(index,inHouse);
+                if (min > max) {
+                    Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                    alert1.setTitle("Error");
+                    alert1.setContentText("The min value must be less than the max.");
+                    alert1.show();
+                }
+                if (stock > max || stock < min) {
+                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.setTitle("Error");
+                    alert2.setContentText("Inventory must be between min and max.");
+                    alert2.show();
+                }
+                if (max > min & stock < max & stock > min) {
+                    Outsourced outsourced = new Outsourced(id, name, price, stock, min, max, companyName);
+                    Inventory.updatePart(index, outsourced);
+
+                    stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                    scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                    stage.setScene(new Scene(scene));
+                    stage.show();
+                }
+            }
         }
-        else {
-            int id = Integer.parseInt(idText.getText());
-            String name = String.valueOf(nameText.getText());
-            int stock = Integer.parseInt(inventoryText.getText());
-            double price = Double.parseDouble(priceText.getText());
-            int max = Integer.parseInt(maxText.getText());
-            int min = Integer.parseInt(minText.getText());
-            String companyName = String.valueOf(companyNameText.getText());
-
-            Outsourced outsourceObj = new Outsourced(id, name, price, stock, max, min, companyName);
-
-            Inventory.updatePart(index,outsourceObj);
+        catch(NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Please enter a valid value for each field.");
+            alert.show();
         }
-
-        stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;
-        scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
-        stage.setScene(new Scene(scene));
-        stage.show();
     }
 
     //switches between the two ModifyPartForm views based on Radio Button Selection

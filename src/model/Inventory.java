@@ -1,6 +1,7 @@
 package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 
 public class Inventory {
@@ -34,6 +35,10 @@ public class Inventory {
         for(Part part : Inventory.getAllParts()){
             if(part.getName().contains(partName)){
                 listedParts.add(part);
+
+            }
+            else {
+
             }
         }
         return listedParts;
@@ -60,8 +65,17 @@ public class Inventory {
             }
             else{
                 //print out message to be deleted eventually
-                System.out.println("Part not found.");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Part not found.");
+                alert.show();;
             }
+        }
+        if(Inventory.getAllParts().size() == 0){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Part not found.");
+            alert.show();;
         }
         return null;
     }
@@ -73,8 +87,17 @@ public class Inventory {
             }
             else{
                 //print out message to be deleted eventually
-                System.out.println("Product not found.");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Product not found.");
+                alert.show();;
             }
+        }
+        if(Inventory.getAllProducts().size() == 0){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Product not found.");
+            alert.show();
         }
         return null;
     }
@@ -93,23 +116,17 @@ public class Inventory {
     public static void updateProduct(int index, Product newProduct){
         for(Product product : Inventory.getAllProducts()){
 
-            System.out.println("if hasnt fired");
             if (allProducts.indexOf(product) == index){
 
-                System.out.println("if fired");
                 allProducts.set(index, newProduct);
             }
         }
     }
 
-
-
-
     public static boolean deletePart(Part selectedPart){
         for(Part partObj : Inventory.getAllParts()){
             if (partObj.getId() == selectedPart.getId()){
-                getAllParts().remove(selectedPart);
-                return true;
+                return getAllParts().remove(selectedPart);
             }
         }
         return false;
@@ -118,8 +135,7 @@ public class Inventory {
     public static boolean deleteProduct(Product selectedProduct){
         for(Product productObj : Inventory.getAllProducts()){
             if (productObj.getId() == selectedProduct.getId()){
-                getAllParts().remove(selectedProduct);
-                return true;
+                return getAllProducts().remove(selectedProduct);
             }
         }
         return false;

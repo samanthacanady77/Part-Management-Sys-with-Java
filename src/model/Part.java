@@ -1,6 +1,5 @@
 package model;
-
-//Part II. C. Create an abstract class and the Part class under Part.java
+/** This class creates parts for the inventory management system */
 public abstract class Part {
     private int id;
     private String name;
@@ -9,7 +8,7 @@ public abstract class Part {
     private int min;
     private int max;
 
-    //constructor function???
+    //constructor
     public Part(int id, String name, double price, int stock, int min, int max) {
         this.id = id;
         this.name = name;

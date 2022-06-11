@@ -69,7 +69,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <TextField fx:id="companyNameText" promptText="company name" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <TextField fx:id="companyNameText" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label text="ID" />
                   <Label text="Name" GridPane.rowIndex="1" />
                   <Label text="Inv" GridPane.rowIndex="2" />
@@ -83,7 +83,7 @@
                   <TextField fx:id="nameText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="inventoryText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <TextField fx:id="priceText" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <TextField fx:id="machineIdText" promptText="machine ID" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <TextField fx:id="machineIdText" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <TextField fx:id="minText" GridPane.columnIndex="3" GridPane.rowIndex="4">
                      <GridPane.margin>
                         <Insets />

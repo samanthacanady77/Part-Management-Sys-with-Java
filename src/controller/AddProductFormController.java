@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,13 +12,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import model.InHouse;
-import model.Inventory;
-import model.Part;
-import model.Product;
+import model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static model.Inventory.lookupPart;
@@ -99,12 +98,10 @@ public class AddProductFormController implements Initializable {
     @FXML
     private Button searchButton;
 
-    public static Product product = null;
-    public static void passInfo (Product passIt){
-        product = passIt;
-    }
 
-    static int newId = 0;
+    public ObservableList<Part> associatedPartsTable = FXCollections.observableArrayList();
+
+    static int newId = 99;
     public static int assignId(){
 
         newId++;
@@ -120,10 +117,7 @@ public class AddProductFormController implements Initializable {
         partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-//not populating
-        //not designed as intended
-
-        //assocPartTableView.setItems(Product.getAllAssociatedParts());
+        assocPartTableView.setItems(associatedPartsTable);
         assocPartIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         assocPartInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         assocPartNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -131,46 +125,61 @@ public class AddProductFormController implements Initializable {
 
     }
 
-
     public void onActionAddPart(ActionEvent actionEvent) {
-        //not complete functionality,
-        //5/27/22 maybe functional now?
-        Part partObj = (Part) partTableView.getSelectionModel().getSelectedItem();
-        //probably not working as intended because static function issues
-        int id = assignId();
-        String name = "dfgfdsg";
-        int stock = 0;
-        double price = 0.00;
-        int max = 0;
-        int min = 0;
+        Part assocPart = (Part) partTableView.getSelectionModel().getSelectedItem();
 
-        Product productObj = new Product(id, name, price, stock, max, min);
-
-        if(partObj == null){
+        if(assocPart == null){
             return;
         }
         else{
-            //functionality here may need adjustment
-            Inventory.getAllParts().remove(partObj);
-            productObj.getAllAssociatedParts().add(partObj);
+
+            associatedPartsTable.add(assocPart);
         }
     }
 
     public void onActionSave(ActionEvent actionEvent) throws IOException {
 
-        int id = assignId();
-        String name = String.valueOf(nameText.getText());
-        int stock = Integer.parseInt(inventoryText.getText());
-        double price = Double.parseDouble(priceText.getText());
-        int max = Integer.parseInt(maxText.getText());
-        int min = Integer.parseInt(minText.getText());
+        try {
+            int id = assignId();
+            String name = String.valueOf(nameText.getText());
+            int stock = Integer.parseInt(inventoryText.getText());
+            double price = Double.parseDouble(priceText.getText());
+            int max = Integer.parseInt(maxText.getText());
+            int min = Integer.parseInt(minText.getText());
 
-        Inventory.addProduct(new Product(id, name, price, stock, max, min));
+            if (min >= max) {
+                Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                alert1.setTitle("Error");
+                alert1.setContentText("The min value must be less than the max.");
+                alert1.show();
+            }
+            if (stock > max || stock < min) {
+                Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                alert2.setTitle("Error");
+                alert2.setContentText("Inventory must be between min and max values.");
+                alert2.show();
+            }
+            if (max > min & stock <= max & stock >= min) {
+                Product product = (new Product(id, name, price, stock, min, max));
+                Inventory.addProduct(product);
 
-        stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-        scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
-        stage.setScene(new Scene(scene));
-        stage.show();
+                for (Part part : associatedPartsTable) {
+                    product.addAssociatedPart(part);
+                }
+
+                stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;
+                scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                stage.setScene(new Scene(scene));
+                stage.show();
+            }
+        }
+        catch(NumberFormatException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Please enter a valid value for each field.");
+            alert.show();
+        }
+
     }
 
     public void onActionCancel(ActionEvent actionEvent) throws IOException {
@@ -182,27 +191,37 @@ public class AddProductFormController implements Initializable {
 
     //maybe works???
     public void onActionRemoveAssocPart(ActionEvent actionEvent) {
-        Part partObj = (Part) assocPartTableView.getSelectionModel().getSelectedItem();
-        // not sure that this is working as intended
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to remove this associated part?");
+        Optional<ButtonType> result = alert1.showAndWait();
 
-        if(partObj == null){
-            return;
-        }
-        else{
-           //.getAllAssociatedParts().remove(partObj);
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Part assocPart = assocPartTableView.getSelectionModel().getSelectedItem();
+
+            if (assocPart == null) {
+                return;
+            } else {
+                associatedPartsTable.remove(assocPart);
+            }
         }
     }
-
     public void onActionSearchParts(ActionEvent actionEvent) {
         String results = searchBar.getText();
         ObservableList<Part> searchParts = lookupPart(results);
 
         if(searchParts.size() == 0){
-            int partIdSearch = Integer.parseInt(searchBar.getText());
-            Part part = lookupPart(partIdSearch);
+            try {
+                int partIdSearch = Integer.parseInt(searchBar.getText());
+                Part part = lookupPart(partIdSearch);
 
-            if(part != null){
-                searchParts.add(part);
+                if (part != null) {
+                    searchParts.add(part);
+                }
+            }
+            catch(NumberFormatException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Part not found.");
+                alert.show();
             }
         }
         partTableView.setItems(searchParts);

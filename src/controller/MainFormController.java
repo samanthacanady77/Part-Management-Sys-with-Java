@@ -1,34 +1,22 @@
 package controller;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-
 import model.*;
-
-import javax.swing.*;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.EventObject;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static com.sun.tools.doclint.Entity.part;
 
-import static java.sql.Types.NULL;
+
 import static model.Inventory.*;
 
 
@@ -103,11 +91,21 @@ public class MainFormController implements Initializable {
         ObservableList<Part> searchParts = lookupPart(results);
 
         if(searchParts.size() == 0){
-            int partIdSearch = Integer.parseInt(partSearchBar.getText());
-            Part part = lookupPart(partIdSearch);
+            //Caused by: java.lang.NumberFormatException: For input string: "asdfsdf"
 
-            if(part != null){
-                searchParts.add(part);
+            try {
+                int partIdSearch = Integer.parseInt(partSearchBar.getText());
+                Part part = lookupPart(partIdSearch);
+
+                if (part != null) {
+                    searchParts.add(part);
+                }
+            }
+            catch(NumberFormatException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Part not found.");
+                alert.show();
             }
         }
         partTableView.setItems(searchParts);
@@ -118,11 +116,20 @@ public class MainFormController implements Initializable {
         ObservableList<Product> searchProducts = lookupProduct(results);
 
         if(searchProducts.size() == 0 ){
-            int productIdSearch = Integer.parseInt(productSearchBar.getText());
-            Product product = lookupProduct(productIdSearch);
 
-            if(part != null){
-                searchProducts.add(product);
+            try {
+                int productIdSearch = Integer.parseInt(productSearchBar.getText());
+                Product product = lookupProduct(productIdSearch);
+
+                if (product != null) {
+                    searchProducts.add(product);
+                }
+            }
+            catch(NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Product not found.");
+                alert.show();
             }
         }
         productTableView.setItems(searchProducts);
@@ -147,10 +154,9 @@ public class MainFormController implements Initializable {
 
     public void onActionModifyPart(ActionEvent actionEvent) throws IOException {
 
-        Part part = (Part)partTableView.getSelectionModel().getSelectedItem();
+        Part part = partTableView.getSelectionModel().getSelectedItem();
         if(part == null){
             return;
-            //maybe add a message saying you must select a part???
         }
         else{
             ModifyPartFormController.passInfoToModifyPartForm(part);
@@ -163,7 +169,7 @@ public class MainFormController implements Initializable {
     }
 
     public void onActionModifyProduct(ActionEvent actionEvent) throws IOException {
-        Product selectedProduct = (Product)productTableView.getSelectionModel().getSelectedItem();
+        Product selectedProduct = productTableView.getSelectionModel().getSelectedItem();
 
         if(selectedProduct == null){
             return;
@@ -180,34 +186,67 @@ public class MainFormController implements Initializable {
 
 
     public void onActionDeletePart(ActionEvent actionEvent) {
-        Part selectedPart = (Part)partTableView.getSelectionModel().getSelectedItem();
 
-        if(selectedPart == null){
-            return;
-        }
-        else{
-            Inventory.getAllParts().remove(selectedPart);
-            //not sure if it should work like this, makes the search bar blank and restores original updated list
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete this part?");
+        Optional<ButtonType> result = alert1.showAndWait();
 
-            partSearchBar.setText("");
-            partTableView.setItems(Inventory.getAllParts());
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Part selectedPart = partTableView.getSelectionModel().getSelectedItem();
+
+                Inventory.deletePart(selectedPart);
+
+                partSearchBar.setText("");
+                partTableView.setItems(Inventory.getAllParts());
+
+                if (selectedPart == null) {
+                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.setTitle("Error");
+                    alert2.setContentText("You must select a part to be deleted.");
+                    alert2.show();
+                }
+            } catch (NullPointerException e) {
+                Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                alert3.setTitle("Error");
+                alert3.setContentText("You must select a part to be deleted.");
+                alert3.show();
+            }
         }
     }
 
     public void onActionDeleteProduct(ActionEvent actionEvent) {
-        Product selectedProductObj = (Product)productTableView.getSelectionModel().getSelectedItem();
-        if(selectedProductObj == null){
-            return;
-        }
-        else{
-            Inventory.getAllProducts().remove(selectedProductObj);
-            //not sure if it should work like this, makes the search bar blank and restores original updated list
-            //will probably update to make dynamic eventually
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this product?");
+        Optional<ButtonType> result = alert1.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Product selectedProduct = (Product) productTableView.getSelectionModel().getSelectedItem();
+
+                if (selectedProduct == null) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("You must select a product to be deleted.");
+                    alert.show();
+                } else if (selectedProduct.getAllAssociatedParts().size() > 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("A product with associated parts cannot be deleted.");
+                    alert.show();
+                } else if (selectedProduct.getAllAssociatedParts().size() == 0) {
+                    Inventory.deleteProduct(selectedProduct);
+                }
+
+            } catch (NullPointerException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("You must select a product to be deleted.");
+                alert.show();
+            }
+
             productSearchBar.setText("");
             productTableView.setItems(Inventory.getAllProducts());
         }
     }
-
     public void onActionExit(ActionEvent actionEvent) {
         System.exit(0);
     }

@@ -3,7 +3,7 @@ package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import static com.sun.tools.doclint.Entity.part;
+
 
 public class Product {
 // cannot be static
@@ -84,10 +84,10 @@ public class Product {
     public void addAssociatedPart(Part part) {
         associatedParts.add(part);
     }
-//experimental
+
     public boolean deleteAssociatedPart(Part selectedAssociatedPart) {
-        for (Part partObj : Inventory.getAllParts()) {
-            if(partObj == selectedAssociatedPart) {
+        for (Part part : Inventory.getAllParts()) {
+            if(part == selectedAssociatedPart) {
                 return getAllAssociatedParts().remove(part);
             }
         }

@@ -55,10 +55,8 @@ public class AddPartFormController implements Initializable {
     @FXML
     private ToggleGroup InHouseOrOutsourced;
 
-
     //generates unique IDs
     static int newId = 99;
-
 
     public static int assignId(){
 
@@ -66,7 +64,6 @@ public class AddPartFormController implements Initializable {
 
         return newId;
     }
-
 
     public void onActionReturnMainForm(ActionEvent actionEvent) throws IOException {
         stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
@@ -76,41 +73,82 @@ public class AddPartFormController implements Initializable {
     }
 
     public void onActionSave(ActionEvent actionEvent) throws IOException {
+       try {
+           if (inHouseRadioButton.isSelected()) {
+               //calls a method that generates a sequential and unique id for each item
+               int id = assignId();
+               String name = String.valueOf(nameText.getText());
+               int stock = Integer.parseInt(inventoryText.getText());
+               double price = Double.parseDouble(priceText.getText());
+               int max = Integer.parseInt(maxText.getText());
+               int min = Integer.parseInt(minText.getText());
+               int machineId = Integer.parseInt(machineIdText.getText());
 
-       if(inHouseRadioButton.isSelected()){
-           //calls a method that generates a sequential and unique id for each item
-           int id = assignId();
-           String name = String.valueOf(nameText.getText());
-           int stock = Integer.parseInt(inventoryText.getText());
-           double price = Double.parseDouble(priceText.getText());
-           int max = Integer.parseInt(maxText.getText());
-           int min = Integer.parseInt(minText.getText());
-           int machineId = Integer.parseInt(machineIdText.getText());
+               if (min >= max) {
+                   Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                   alert1.setTitle("Error");
+                   alert1.setContentText("The min value must be less than the max.");
+                   alert1.show();
+               }
 
-           Inventory.addPart(new InHouse(id, name, price, stock, max, min, machineId));
+               if (stock > max || stock < min) {
+                   Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                   alert2.setTitle("Error");
+                   alert2.setContentText("Inventory must be between min and max values.");
+                   alert2.show();
+               }
+               if (max > min & stock <= max & stock >= min) {
+                   Inventory.addPart(new InHouse(id, name, price, stock, min, max, machineId));
+
+                   stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                   scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                   stage.setScene(new Scene(scene));
+                   stage.show();
+               }
+           }
+           //java.lang.NumberFormatException: For input string: ""
+           //fixed by alter machineId, moved it inside of the loop
+           else {
+               int id = assignId();
+               String name = String.valueOf(nameText.getText());
+               int stock = Integer.parseInt(inventoryText.getText());
+               double price = Double.parseDouble(priceText.getText());
+               int max = Integer.parseInt(maxText.getText());
+               int min = Integer.parseInt(minText.getText());
+               String companyName = String.valueOf(companyNameText.getText());
+
+               if (min >= max) {
+                   Alert alert1 = new Alert(Alert.AlertType.ERROR);
+                   alert1.setTitle("Error");
+                   alert1.setContentText("The min value must be less than the max.");
+                   alert1.show();
+               }
+               if (stock > max || stock < min) {
+                   Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                   alert2.setTitle("Error");
+                   alert2.setContentText("Inventory must be between min and max values.");
+                   alert2.show();
+               }
+               if (max > min & stock <= max & stock >= min) {
+                   System.out.println(max);
+                   Part tempPartTest = new Outsourced(id, name, price, stock, min, max, companyName);
+                   System.out.println(tempPartTest.getMax());
+                   Inventory.addPart(tempPartTest);
+
+                   stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;
+                   scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                   stage.setScene(new Scene(scene));
+                   stage.show();
+               }
+           }
        }
-       //java.lang.NumberFormatException: For input string: ""
-       //fixed by alter machineId, moved it inside of the loop
-       else{
-           int id = assignId();
-           String name = String.valueOf(nameText.getText());
-           int stock = Integer.parseInt(inventoryText.getText());
-           double price = Double.parseDouble(priceText.getText());
-           int max = Integer.parseInt(maxText.getText());
-           int min = Integer.parseInt(minText.getText());
-           String companyName = String.valueOf(companyNameText.getText());
-
-           Inventory.addPart(new Outsourced(id, name, price, stock, max, min, companyName));
-
-        }
-
-        stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;
-        scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
-        stage.setScene(new Scene(scene));
-        stage.show();
-
+       catch(NumberFormatException e) {
+           Alert alert = new Alert(Alert.AlertType.ERROR);
+           alert.setTitle("Error");
+           alert.setContentText("Please enter a valid value for each field.");
+           alert.show();
+       }
     }
-
 
     //switches between the two AddPartForm views based on Radio Button Selection
     public void onActionChangeViewToOutsourced(ActionEvent actionEvent) throws IOException {
