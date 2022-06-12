@@ -15,24 +15,19 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-
-
 import static model.Inventory.*;
 
-
+/** This class creates and manages the Main Form. */
 public class MainFormController implements Initializable {
 
     Stage stage;
     Parent scene;
 
-    //search bar
     @FXML
     private TextField partSearchBar;
     @FXML
     private Button partSearchButton;
 
-
-    //part table
     @FXML
     private TableView<Part> partTableView;
     @FXML
@@ -44,8 +39,6 @@ public class MainFormController implements Initializable {
     @FXML
     private TableColumn<Part, Double> partPriceCol;
 
-
-    //buttons
     @FXML
     private Button partAddButton;
     @FXML
@@ -53,8 +46,6 @@ public class MainFormController implements Initializable {
     @FXML
     private Button partDeleteButton;
 
-
-    //product table
     @FXML
     private TableView<Product> productTableView;
     @FXML
@@ -66,8 +57,6 @@ public class MainFormController implements Initializable {
     @FXML
     private TableColumn<Product, Double> productPriceCol;
 
-
-    //product button and search bar
     @FXML
     private TextField productSearchBar;
     @FXML
@@ -78,13 +67,12 @@ public class MainFormController implements Initializable {
     private Button productModifyButton;
     @FXML
     private Button productDeleteButton;
-
-
-    //exit button
     @FXML
     private Button exitButton;
 
-
+    /** This method searches for parts on the Main Form using Inventory's lookupPart methods.
+     * @param event The action of clicking the search bar button
+     * */
     @FXML
     void onActionSearchParts(ActionEvent event) {
         String results = partSearchBar.getText();
@@ -100,6 +88,12 @@ public class MainFormController implements Initializable {
                 if (part != null) {
                     searchParts.add(part);
                 }
+                if (searchParts.size() == 0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("Part not found.");
+                    alert.show();
+                }
             }
             catch(NumberFormatException e){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -110,6 +104,10 @@ public class MainFormController implements Initializable {
         }
         partTableView.setItems(searchParts);
     }
+
+    /** This method searches for products on the Main Form using Inventory's lookupProduct methods.
+     * @param event The action of clicking the search bar button
+     * */
     @FXML
     void onActionSearchProducts(ActionEvent event) {
         String results = productSearchBar.getText();
@@ -124,6 +122,12 @@ public class MainFormController implements Initializable {
                 if (product != null) {
                     searchProducts.add(product);
                 }
+                if (searchProducts.size() == 0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("Product not found.");
+                    alert.show();
+                }
             }
             catch(NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -136,25 +140,35 @@ public class MainFormController implements Initializable {
     }
 
 
+    /** This method changes to the Add Part Form.
+     * @param actionEvent The action of clicking the part add button.
+     * */
     public void onActionAddPart(ActionEvent actionEvent) throws IOException {
-
         stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
         scene = FXMLLoader.load(getClass().getResource("/view/AddPartForm.fxml"));
         stage.setScene(new Scene(scene));
         stage.show();
+
     }
 
+    /**This method changes to the Add Product Form.
+     * @param actionEvent The action of clicking the product add button.
+     * */
     public void onActionAddProduct(ActionEvent actionEvent) throws IOException {
         stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
         scene = FXMLLoader.load(getClass().getResource("/view/AddProductForm.fxml"));
         stage.setScene(new Scene(scene));
         stage.show();
+
     }
 
 
+    /** This method allows you to select a part and change screens to the Modify Part Form.
+     * @param actionEvent The action of clicking the part modify button
+     * */
     public void onActionModifyPart(ActionEvent actionEvent) throws IOException {
-
         Part part = partTableView.getSelectionModel().getSelectedItem();
+
         if(part == null){
             return;
         }
@@ -168,6 +182,9 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /** This method allows you to select a product and then changes to the Modify Product Form.
+     * @param actionEvent The action of clicking the product modify button
+     * */
     public void onActionModifyProduct(ActionEvent actionEvent) throws IOException {
         Product selectedProduct = productTableView.getSelectionModel().getSelectedItem();
 
@@ -185,87 +202,99 @@ public class MainFormController implements Initializable {
     }
 
 
+    /** This method deletes a part and confirms it with the user.
+     * @param actionEvent The action of clicking the part delete button
+     * */
     public void onActionDeletePart(ActionEvent actionEvent) {
 
-        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete this part?");
-        Optional<ButtonType> result = alert1.showAndWait();
+        try {
+            Part selectedPart = partTableView.getSelectionModel().getSelectedItem();
 
-        if(result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                Part selectedPart = partTableView.getSelectionModel().getSelectedItem();
-
-                Inventory.deletePart(selectedPart);
-
-                partSearchBar.setText("");
-                partTableView.setItems(Inventory.getAllParts());
-
-                if (selectedPart == null) {
-                    Alert alert2 = new Alert(Alert.AlertType.ERROR);
-                    alert2.setTitle("Error");
-                    alert2.setContentText("You must select a part to be deleted.");
-                    alert2.show();
-                }
-            } catch (NullPointerException e) {
-                Alert alert3 = new Alert(Alert.AlertType.ERROR);
-                alert3.setTitle("Error");
-                alert3.setContentText("You must select a part to be deleted.");
-                alert3.show();
+            if (selectedPart == null) {
+                Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                alert2.setTitle("Error");
+                alert2.setContentText("You must select a part to be deleted.");
+                alert2.show();
             }
+            else{
+                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete this part?");
+                Optional<ButtonType> result = alert1.showAndWait();
+
+                if(result.isPresent() && result.get() == ButtonType.OK) {
+                    Inventory.deletePart(selectedPart);
+
+                    partSearchBar.setText("");
+                    partTableView.setItems(Inventory.getAllParts());
+
+                }
+            }
+        } catch (NullPointerException e) {
+            Alert alert3 = new Alert(Alert.AlertType.ERROR);
+            alert3.setTitle("Error");
+            alert3.setContentText("You must select a part to be deleted.");
+            alert3.show();
         }
     }
 
+    /** This method deletes a product and confirms it with the user.
+     * @param actionEvent The action of clicking the product delete button
+     * */
     public void onActionDeleteProduct(ActionEvent actionEvent) {
-        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this product?");
-        Optional<ButtonType> result = alert1.showAndWait();
+        try {
+            Product selectedProduct = productTableView.getSelectionModel().getSelectedItem();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                Product selectedProduct = (Product) productTableView.getSelectionModel().getSelectedItem();
-
-                if (selectedProduct == null) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("You must select a product to be deleted.");
-                    alert.show();
-                } else if (selectedProduct.getAllAssociatedParts().size() > 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("A product with associated parts cannot be deleted.");
-                    alert.show();
-                } else if (selectedProduct.getAllAssociatedParts().size() == 0) {
-                    Inventory.deleteProduct(selectedProduct);
-                }
-
-            } catch (NullPointerException e) {
+            if (selectedProduct == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setContentText("You must select a product to be deleted.");
                 alert.show();
-            }
 
-            productSearchBar.setText("");
-            productTableView.setItems(Inventory.getAllProducts());
+            } else if (selectedProduct.getAllAssociatedParts().size() > 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("A product with associated parts cannot be deleted.");
+                alert.show();
+
+            } else if (selectedProduct.getAllAssociatedParts().size() == 0) {
+                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this product?");
+                Optional<ButtonType> result = alert1.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    Inventory.deleteProduct(selectedProduct);
+
+                    productSearchBar.setText("");
+                    productTableView.setItems(Inventory.getAllProducts());
+                }
+            }
         }
+        catch (NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("You must select a product to be deleted.");
+            alert.show();
+        }
+
+
     }
+
+    /** This method exits the program.
+     * @param actionEvent The action of clicking the exit button
+     * */
     public void onActionExit(ActionEvent actionEvent) {
         System.exit(0);
     }
 
 
+    /** This method initializes the form. */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        //reassigns Id numbers each time the main form is pulled up, not sure if this is the proper functionality
-
-        //populate part table view
         partTableView.setItems(Inventory.getAllParts());
-        //partTableView.setItems(filter("Sam")); //temp
         partIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         partInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         partPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        //populate product table view
         productTableView.setItems(Inventory.getAllProducts());
         productIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         productInventoryCol.setCellValueFactory(new PropertyValueFactory<>("stock"));

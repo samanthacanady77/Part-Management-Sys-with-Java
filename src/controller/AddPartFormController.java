@@ -11,18 +11,16 @@ import javafx.stage.Stage;
 import model.InHouse;
 import model.Inventory;
 import model.Outsourced;
-import model.Part;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
+/** This class creates and manages the Add Part Form. */
 public class AddPartFormController implements Initializable {
     Stage stage;
     Parent scene;
 
-    //variables
     @FXML
     private TextField idText;
     @FXML
@@ -42,8 +40,6 @@ public class AddPartFormController implements Initializable {
     @FXML
     private Label machineIdOrCompanyNameLabel;
 
-
-    //buttons
     @FXML
     private RadioButton inHouseRadioButton;
     @FXML
@@ -55,9 +51,10 @@ public class AddPartFormController implements Initializable {
     @FXML
     private ToggleGroup InHouseOrOutsourced;
 
-    //generates unique IDs
     static int newId = 99;
 
+    /** This method generates unique IDs.
+     * @return Returns the new, unique ID */
     public static int assignId(){
 
         newId++;
@@ -65,6 +62,9 @@ public class AddPartFormController implements Initializable {
         return newId;
     }
 
+    /** This method returns the user to the Main Form upon clicking the cancel button.
+     * @param actionEvent The action of clicking the cancel button
+     * */
     public void onActionReturnMainForm(ActionEvent actionEvent) throws IOException {
         stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
@@ -72,10 +72,19 @@ public class AddPartFormController implements Initializable {
         stage.show();
     }
 
+    /** This method saves the data input into the form and adds it as an InHouse or Outsourced part.
+     * The form alternates between creating a InHouse or Outsourced part depending on which radio
+     * button is selected. It also validates proper data is being input.
+     *<p><b>
+     * RUNTIME ERROR: I experienced a java.lang.NumberFormatException when attempting to generate the machine ID in the fields.
+     * I had to make separate sections for passed in InHouse and Outsourced parts because Strings cannot be set as an int.
+     *</b></p>
+     * @param actionEvent The actions of clicking the save button
+     */
     public void onActionSave(ActionEvent actionEvent) throws IOException {
        try {
            if (inHouseRadioButton.isSelected()) {
-               //calls a method that generates a sequential and unique id for each item
+
                int id = assignId();
                String name = String.valueOf(nameText.getText());
                int stock = Integer.parseInt(inventoryText.getText());
@@ -85,29 +94,36 @@ public class AddPartFormController implements Initializable {
                int machineId = Integer.parseInt(machineIdText.getText());
 
                if (min >= max) {
-                   Alert alert1 = new Alert(Alert.AlertType.ERROR);
-                   alert1.setTitle("Error");
-                   alert1.setContentText("The min value must be less than the max.");
-                   alert1.show();
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                   alert.setTitle("Error");
+                   alert.setContentText("The min value must be less than the max.");
+                   alert.show();
                }
 
                if (stock > max || stock < min) {
-                   Alert alert2 = new Alert(Alert.AlertType.ERROR);
-                   alert2.setTitle("Error");
-                   alert2.setContentText("Inventory must be between min and max values.");
-                   alert2.show();
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                   alert.setTitle("Error");
+                   alert.setContentText("Inventory must be between min and max values.");
+                   alert.show();
                }
-               if (max > min & stock <= max & stock >= min) {
-                   Inventory.addPart(new InHouse(id, name, price, stock, min, max, machineId));
+               if ((max > min) & (stock <= max) & (stock >= min)) {
+                   if(name.isBlank()){
+                       Alert alert = new Alert(Alert.AlertType.ERROR);
+                       alert.setTitle("Error");
+                       alert.setContentText("Please enter a valid value for each field");
+                       alert.show();
 
-                   stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-                   scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
-                   stage.setScene(new Scene(scene));
-                   stage.show();
+                   }
+                   else {
+                       Inventory.addPart(new InHouse(id, name, price, stock, min, max, machineId));
+
+                       stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                       scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                       stage.setScene(new Scene(scene));
+                       stage.show();
+                   }
                }
            }
-           //java.lang.NumberFormatException: For input string: ""
-           //fixed by alter machineId, moved it inside of the loop
            else {
                int id = assignId();
                String name = String.valueOf(nameText.getText());
@@ -118,27 +134,33 @@ public class AddPartFormController implements Initializable {
                String companyName = String.valueOf(companyNameText.getText());
 
                if (min >= max) {
-                   Alert alert1 = new Alert(Alert.AlertType.ERROR);
-                   alert1.setTitle("Error");
-                   alert1.setContentText("The min value must be less than the max.");
-                   alert1.show();
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                   alert.setTitle("Error");
+                   alert.setContentText("The min value must be less than the max.");
+                   alert.show();
                }
-               if (stock > max || stock < min) {
-                   Alert alert2 = new Alert(Alert.AlertType.ERROR);
-                   alert2.setTitle("Error");
-                   alert2.setContentText("Inventory must be between min and max values.");
-                   alert2.show();
+               if ((stock > max) || (stock < min)) {
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                   alert.setTitle("Error");
+                   alert.setContentText("Inventory must be between min and max values.");
+                   alert.show();
                }
-               if (max > min & stock <= max & stock >= min) {
-                   System.out.println(max);
-                   Part tempPartTest = new Outsourced(id, name, price, stock, min, max, companyName);
-                   System.out.println(tempPartTest.getMax());
-                   Inventory.addPart(tempPartTest);
+               if ((max > min) & (stock <= max) & (stock >= min)) {
 
-                   stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();;
-                   scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
-                   stage.setScene(new Scene(scene));
-                   stage.show();
+                   if(name.isBlank() ||companyName.isBlank()){
+                       Alert alert = new Alert(Alert.AlertType.ERROR);
+                       alert.setTitle("Error");
+                       alert.setContentText("Please enter a valid value for each field");
+                       alert.show();
+                   }
+                   else {
+                       Inventory.addPart(new Outsourced(id, name, price, stock, min, max, companyName));
+
+                       stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                       scene = FXMLLoader.load(getClass().getResource("/view/MainForm.fxml"));
+                       stage.setScene(new Scene(scene));
+                       stage.show();
+                   }
                }
            }
        }
@@ -150,14 +172,19 @@ public class AddPartFormController implements Initializable {
        }
     }
 
-    //switches between the two AddPartForm views based on Radio Button Selection
-    public void onActionChangeViewToOutsourced(ActionEvent actionEvent) throws IOException {
+    /** This method changes the machine ID label to company name when the outsourcedRadioButton is selected.
+     @param actionEvent The action of selecting the outsourcedRadioButton
+     */
+    public void onActionChangeViewToOutsourced(ActionEvent actionEvent){
         machineIdOrCompanyNameLabel.setText("Company Name");
         machineIdText.setVisible(false);
         companyNameText.setVisible(true);
         machineIdText.clear();
     }
 
+    /** This method changes the company name label to machine ID when the inHouseRadioButton is selected.
+     * @param actionEvent The action of selecting the inHouseRadioButton
+     * */
     public void OnActionChangeViewToInHouse(ActionEvent actionEvent) {
         machineIdOrCompanyNameLabel.setText("Machine ID");
         machineIdText.setVisible(true);
@@ -165,7 +192,7 @@ public class AddPartFormController implements Initializable {
         companyNameText.clear();
     }
 
-
+    /** This method initializes the class at start. */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
