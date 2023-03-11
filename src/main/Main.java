@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+//Javadoc files are located in the main folder in a folder titled javadoc
 /** This is the main class that loads the first scene, Main Form.
  * <p><b>
  *  FUTURE ENHANCEMENT: I would enhance this inventory management system by adding a SQL database. It could also be enhanced

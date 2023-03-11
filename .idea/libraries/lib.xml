@@ -1,13 +1,22 @@
 <component name="libraryTable">
   <library name="lib">
     <CLASSES>
-      <root url="file://$PATH_TO_FX$" />
+      <root url="file://D:/Coding/Java/jdk-17.0.3.1/lib" />
+      <root url="file://D:/Coding/Java/jdk-18.0.1/lib" />
+      <root url="file://D:/Coding/Java/openjfx-11.0.2_windows-x64_bin-sdk/javafx-sdk-11.0.2/lib" />
+      <root url="jar://D:/Coding/mysql-connector-java-8.0.29/mysql-connector-java-8.0.29/mysql-connector-java-8.0.29.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="file://$PATH_TO_FX$" />
+      <root url="file://D:/Coding/Java/jdk-17.0.3.1/lib" />
+      <root url="file://D:/Coding/Java/jdk-18.0.1/lib" />
+      <root url="file://D:/Coding/Java/openjfx-11.0.2_windows-x64_bin-sdk/javafx-sdk-11.0.2/lib" />
     </SOURCES>
-    <jarDirectory url="file://$PATH_TO_FX$" recursive="false" />
-    <jarDirectory url="file://$PATH_TO_FX$" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://D:/Coding/Java/jdk-17.0.3.1/lib" recursive="false" />
+    <jarDirectory url="file://D:/Coding/Java/jdk-18.0.1/lib" recursive="false" />
+    <jarDirectory url="file://D:/Coding/Java/openjfx-11.0.2_windows-x64_bin-sdk/javafx-sdk-11.0.2/lib" recursive="false" />
+    <jarDirectory url="file://D:/Coding/Java/jdk-17.0.3.1/lib" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://D:/Coding/Java/jdk-18.0.1/lib" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://D:/Coding/Java/openjfx-11.0.2_windows-x64_bin-sdk/javafx-sdk-11.0.2/lib" recursive="false" type="SOURCES" />
   </library>
 </component>

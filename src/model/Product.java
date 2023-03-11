@@ -133,7 +133,7 @@ public class Product {
         return false;
     }
 
-    /** This method gets all associated parts from the ObservableList associatedParts
+    /** This method gets all associated parts from the ObservableList associatedParts.
      * @return Returns associatedParts */
     public ObservableList<Part> getAllAssociatedParts() {
         return associatedParts;

@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 
 import static model.Inventory.*;
 
+
 /** This class creates and manages the Main Form. */
 public class MainFormController implements Initializable {
 
@@ -217,6 +218,9 @@ public class MainFormController implements Initializable {
                 alert2.show();
             }
             else{
+
+                // A custom message is displayed in the user interface with the Appointment_ID and type of appointment canceled.
+
                 Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete this part?");
                 Optional<ButtonType> result = alert1.showAndWait();
 
